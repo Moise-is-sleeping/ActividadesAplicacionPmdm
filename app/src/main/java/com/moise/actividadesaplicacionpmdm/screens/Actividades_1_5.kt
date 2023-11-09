@@ -29,7 +29,7 @@ Actividad 1:
 Hacer que el texto del botón muestre "Cargar perfil", pero cambie a "Cancelar"
 cuando se muestre la línea de progreso... Cuando pulsemos "Cancelar" vuelve al texto por defecto.
 */
-@Preview(showBackground = true)
+
 @Composable
 fun Actividad1() {
     var showLoading by rememberSaveable { mutableStateOf(false) }
@@ -83,21 +83,31 @@ Actividad 3:
   cuando se pulse el botón Decrementar.
 - Evitar que nos pasemos de los márgenes de su propiedad progressStatus (0-1)
 */
+
 @Composable
 fun Actividad3() {
+
+    var progress by rememberSaveable { mutableStateOf(0.5f) }
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LinearProgressIndicator(progress = 0f)
+        LinearProgressIndicator(progress = progress)
 
-        Row(Modifier.fillMaxWidth()) {
-            Button(onClick = { /* TODO */ }) {
-                Text(text = "Incrementar")
+        Row(Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center) {
+            Button(modifier = Modifier.padding(end = 5.dp, top = 15.dp),
+                onClick = { if(progress <1){
+                    progress+= 0.1f
+                }  }) {
+                Text(text = " + ")
             }
-            Button(onClick = { /* TODO */ }) {
-                Text(text = "Reducir")
+            Button(modifier = Modifier.padding(start = 5.dp,top=15.dp),
+                onClick = { if(progress > 0.1){
+                    progress-= 0.1f
+                }  }) {
+                Text(text = " - ")
             }
         }
     }
@@ -109,16 +119,42 @@ Actividad 4:
 Sitúa el TextField en el centro de la pantalla y haz que reemplace el valor de una coma por un punto
 y que no deje escribir más de un punto decimal...
 */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Actividad4() {
     var myVal by rememberSaveable { mutableStateOf("") }
 
-    TextField(
-        value = myVal,
-        onValueChange = { myVal = it },
-        label = { Text(text = "Importe") }
-    )
+    fun checkComa(text:String): String {
+        val newText = text.replace(",",".")
+        return newText
+    }
+
+    fun checkDecimal(text:String): String {
+        val textList = text.split("")
+        var newText = ""
+        var decimal = false
+        for (char in textList){
+            if (char == "." && !decimal){
+                newText += char
+                decimal = true
+            }else if(char != "."){
+                newText+=char
+            }
+        }
+        return newText
+    }
+
+    Column(modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        TextField(
+            value = myVal,
+            onValueChange = {
+                myVal = checkDecimal(checkComa(it)) },
+            label = { Text(text = "Importe") }
+        )
+    }
 }
 
 
@@ -129,6 +165,7 @@ al que debes añadir un padding alrededor de 15 dp y establecer colores diferent
 cuando tenga el foco y no lo tenga.
 A nivel funcional no permitas que se introduzcan caracteres que invaliden un número decimal.
 */
+@Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Actividad5() {
